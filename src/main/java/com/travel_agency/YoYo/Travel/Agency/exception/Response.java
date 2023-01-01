@@ -1,4 +1,4 @@
-package com.travel_agency.YoYo.Travel.Agency.model;
+package com.travel_agency.YoYo.Travel.Agency.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,15 +2,14 @@ package com.travel_agency.YoYo.Travel.Agency.model.location;
 
 import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class City {
@@ -21,10 +20,10 @@ public class City {
     private int id;
     @Column
     private String name;
-    @OneToMany
+    @OneToMany(mappedBy = "city")
     private List<MostVisitatedPlaces> mostVisitedPlaces;
-    @OneToMany
-    private List<Destination> destinationReservationWithoutOcupiedDates;
+    @OneToMany(mappedBy = "city")
+    private List<Destination> destination;
     @ManyToOne
     private Country country;
 }

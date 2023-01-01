@@ -1,34 +1,23 @@
 package com.travel_agency.YoYo.Travel.Agency.model.destination;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.travel_agency.YoYo.Travel.Agency.model.location.City;
 import com.travel_agency.YoYo.Travel.Agency.model.location.Country;
 import com.travel_agency.YoYo.Travel.Agency.model.reservation.Reservation;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
+
 
 import java.util.List;
 
-// Ez a Destination class az egyik fő class
-// Ezt szeretnem a főoldalon látni egy api meghivásával
-// hogy amikor meghivom, az összes házat és hotelt lehessen látni
-// Ez összeköttetésben van a Cityvel, a Countryval, amelyekre ha rámegyünk akkor
-// kiirat pár infot az adott Countryrol vagy Cityröl
-// ITT egy JSON a get ALL destination
-// {
-//        "dest_Id": 1,
-//        "name": "Somewhere",
-//        "country": null,
-//        "city": null,
-//        "price": 5.9,
-//        "typeOfAccommodation": "HOTEL",
-//        "occupiedDates": [],                  <--Itt nem jelenik meg az hogy mely datumok foglaltak
-//        "description": "Is a large house",
-//        "reservation": []                     <--Itt nem jelennek meg  foglalások
-//    },
+import static jakarta.persistence.FetchType.LAZY;
+
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -36,11 +25,11 @@ import java.util.List;
 public class Destination {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.AUTO,generator = "native")
-    @GenericGenerator(name="native",strategy = "native")
-    private int dest_Id;
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private int destination_id;
     //Megadjuk a ház,hotel,motel akármi is annak a nevét. Ahol szeretnénk egy foglalást lérehozni
-    @Column
+    @NotBlank(message="Name must not be blank")
+    @Size(min=2, message="Name must be at least 2 characters long")
     private String name;
 
     //Itt az összeköttetés az Országgal amelyre ha rámegyünk különböző infokat kapunk meg
@@ -55,48 +44,36 @@ public class Destination {
     private City city;
 
     //Az összeget tároljuk itt el, hogy mennyibe kerül az adott helyiség egy napra
-    @Column
+    @NotNull(message="Price must not be blank")
     private double price;
 
     //A tipusát tároljuk el az adott lakosztálynak hogy egy Hotelröl beszélünk egy Villárol stb.
     //Ez egy Enum
     @Column
+    @JsonProperty("type_of_accommodation")
     private TypeOfAccommodation typeOfAccommodation;
 
-    //Az OccupiedDatesForDestination azért hosztam létre hogy
-    //amikor létrehozunk egy foglalást a reservation classban akkor itt ez a rész megteljen
-    //azzal a dátummal amelyet a reservationban kiválasztottunk/beirtunk. Hogy aki csinál egy másik foglalást
-    // lássa hogy az adott dátum el van foglalva . Egyenlöre sajnos nem müködik
-    //nem tudom hogy lehetne összekötni hogy updateolodjon az érték... :(
-    @OneToMany
-    private List<OccupiedDatesForDestinations> occupiedDates;
-
     //Ez csak egy leirás az adott helynek hogy mit foglal magában
+    @NotBlank(message="Description must not be blank")
+    @Size(min=80, message="Description must be at least 80 characters long")
     @Column
+    @Lob @Basic(fetch=LAZY)
     private String description;
 
     //Itt a reservation oszlopunk amely egy lista a foglalásokrol. Ugye egy hotelthez több foglalás is tartozik
-    // de egy foglalás csak egy hotelhez tartozik nem többhöz. Amit elszeretnék érni hogy amikor nyomok egy get
-    //all destination akkor az összes foglalás megjelenjen vele együtt. Pld. A Cristal Hotelhez 3 foglalás van és
-    //megjelenik hogy ki foglalta le stb. Tehát az reservation amit csinalt a személy itt utolso sorként megjelenjen
-    //csak sajnos nem jelenik meg. Egy üres arrayt kapok.
-    //Ami még gondot okoz hogy ha ezt sikerül megcsinálni, mármint megjelenik az összes reservation egy destinationnál,
-    //Amikor csinálok egy get All Reservation akkor a reservationoknál megjelenik az összes foglalás is az adott destinationnál
-    //Azt nem lehetne kivenni marmint amikor csinalok egy Get all Reservation csak az adott hotelt lássam de azt ne hogy milyen
-    //foglalásai vannak, és amikor Get All Destinationt csinálok akkor minden látszodjon mármint az összes foglalás
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    // de egy foglalás csak egy hotelhez tartozik nem többhöz.
+    @OneToMany(mappedBy = "destination", cascade = {CascadeType.ALL})
     private List<Reservation> reservation;
 
-    //Az alábbi dolgok csak próbálkozások hogy kiirasak par dolgot. Az elsö egy class ami rendelkezik az elfoglalt datumokkal
-    //Olyan pontosan mint a List<OccupiedDatesForDestinations> csak mivel az nem müködik igy probálkoztam.
-    //Az utloso pedig hogy kiirasam szépen a Destinationokat a reservationokkal együtt mert ugye ezzel a List<Reservation> al nem
-    // sikerült
+    //Egy listát szeretnék látni az elfoglalt dátumokrol. Nem tudom hogy lehetne ezt a listát feltölteni azokkal az
+    //adatokkal amelyek a reservationban vannak. A start date és end date kellene nekem csak hogy azokkal legyen fel
+    //toltve a lista
+    @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL)
+    @JsonProperty("occupied_dates")
+    private List<OccupiedDates> occupiedDates;
 
-//    @OneToOne
-//    @JsonIgnore
-//    private DestinationWithOccupiedDates DestinationWithOccupiedDates;
-//    @OneToOne(cascade = CascadeType.MERGE)
-//    @JsonIgnore
-//    private DestinationWithReservation destinationWithReservation;
+    @Column
+    private int availableRooms;
+
 
 }

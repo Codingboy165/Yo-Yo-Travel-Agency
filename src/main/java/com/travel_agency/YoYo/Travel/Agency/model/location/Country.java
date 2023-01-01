@@ -33,6 +33,6 @@ public class Country {
     private int averageTouristInAYear;
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<City> cities;
-    @OneToMany
-    private List<Destination> destinationReservationWithoutOcupiedDates;
+    @OneToMany(mappedBy = "country")
+    private List<Destination> destination;
 }
