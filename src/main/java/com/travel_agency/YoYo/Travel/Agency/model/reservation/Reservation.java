@@ -55,11 +55,17 @@ public class Reservation {
     @Column
     @JsonProperty("end_date")
     private Date endDate;
-    @ManyToOne
+    @JoinColumn(name = "destination_id")
+    @ManyToOne(targetEntity = Destination.class, fetch = FetchType.LAZY)
     @JsonIgnore
     private Destination destination;
     @Column
     @JsonProperty("reservation_creation")
     private LocalDate reservationCreation= LocalDate.now();
-    private int dest_id;
+
+    @Column(name = "destination_id",insertable = false, updatable = false)
+    private int destination_id;
+
+    @JsonProperty("how_many_rooms")
+    private int howManyRooms;
 }

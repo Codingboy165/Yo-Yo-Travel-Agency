@@ -17,16 +17,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-
 @Service
-public class DestinationService  {
+public class DestinationService {
 
     private static long index = 1;
-    private final List<DateRangeValidator> dateRangeValidators= new ArrayList<>();
+    private final List<DateRangeValidator> dateRangeValidators = new ArrayList<>();
     private final List<Integer> uniqueDestination = new ArrayList<>();
-    private boolean weNeedToCreateANewRommsValidator=true;
+    private boolean weNeedToCreateANewRoomsValidator = true;
     private final List<RoomsValidator> roomsValidators = new LinkedList<>();
-    private boolean trueOrFalse=false;
+    private boolean weNeedToCreateNewOccupiedDatesRange = false;
     private final DestinationRepository destinationRepository;
     private final ReservationRepository reservationRepository;
     private final CountryRepository countryRepository;
@@ -55,7 +54,7 @@ public class DestinationService  {
     public Destination getDestinationById(long id) {
         return destinationRepository.findAll().stream().
                 filter(t -> t.getDestination_id() == id).findFirst().orElseThrow(() ->
-                        new DestinationMissingException("ERROR","Destination missing"));
+                        new DestinationMissingException("ERROR", "Destination missing"));
     }
 
     //RESERVATION GET
@@ -72,99 +71,99 @@ public class DestinationService  {
 
     //RESERVATION ADD
     public void addReservationToADestination(int id, Reservation reservation) {
+
         Destination destination = getDestinationById(id);
-
         for (RoomsValidator validator : roomsValidators) {
-            if ((validator.getId() == destination.getDestination_id())
+            if ((validator.getId() == destination.getDestination_id()) &&
+                    (reservation.getStartDate().compareTo(validator.getEndDate()) <= 0)&&
+                    (validator.getStartDate().compareTo(reservation.getEndDate()) <= 0)&&
+                    (validator.getHowManyRooms() - reservation.getHowManyRooms() < 0)) {
 
-                    &&
+                throw new DateIsTakenException("ERROR", "No available rooms for this date range");
 
-                    (reservation.getStartDate().compareTo(validator.getEndDate()) <= 0)
+            } else
+                if (reservation.getHowManyRooms() < 0) {
 
-                    &&
+                throw new DateIsTakenException("ERROR", "You entered the rooms information incorrectly");
 
-                    (validator.getStartDate().compareTo(reservation.getEndDate()) <= 0)
+            } else
+                if ((validator.getId() == destination.getDestination_id()) &&
+                    (reservation.getStartDate().compareTo(validator.getEndDate()) <= 0) &&
+                    (validator.getStartDate().compareTo(reservation.getEndDate()) <= 0)) {
 
-                    &&
+                validator.setHowManyRooms(validator.getHowManyRooms() - reservation.getHowManyRooms());
+                weNeedToCreateANewRoomsValidator = false;
 
-                    validator.getHowManyRooms() == 0) {
-                throw new DateIsTakenException("ERROR", "No available rooms");
-            }
+                }
+        }
+        if (reservation.getStartDate().compareTo(reservation.getEndDate()) > 0) {
+
+            throw new DateIsTakenException("ERROR", "The start date can't occurs after end date");
+
         }
 
-        //Bealitjuk a reservationt hogy rendelkezzen a destination_id-val
         reservation.setDestination(destination);
-        reservation.setDest_id(destination.getDestination_id());
         destination.getReservation().add(reservation);
-        //Idáig tart
-
-        //Letrehozunk egy elfoglalt napok objektumot
-        OccupiedDates occupiedDate = new OccupiedDates();
-        occupiedDate.setStartDate(reservation.getStartDate().toString());
-        occupiedDate.setEndDate(reservation.getEndDate().toString());
-        occupiedDate.setDestination(destination);
-        //Idaig tart
-
-        if(reservation.getStartDate().compareTo(reservation.getEndDate()) > 0){
-            throw new DateIsTakenException("ERROR","The start date can't occurs after end date");
-       }
 
         DateRangeValidator checker = new DateRangeValidator();
-
-        for (DateRangeValidator rangeValidator : dateRangeValidators) {
-            if (((reservation.getStartDate().compareTo(rangeValidator.getEndDate()) <= 0))
-                    && ((rangeValidator.getStartDate().compareTo(reservation.getEndDate()) <= 0))
-                    && (uniqueDestination.contains(occupiedDate.getDestination().getDestination_id())) && destination.getAvailableRooms() == 0) {
-                throw new DateIsTakenException("ERROR", "The Date is taken. Please enter a new date interval");
-            }
-        }
         checker.setStartDate(reservation.getStartDate());
         checker.setEndDate(reservation.getEndDate());
 
-        for (RoomsValidator validator : roomsValidators) {
-            if ((validator.getId() == destination.getDestination_id()
-                    && reservation.getStartDate().compareTo(validator.getEndDate()) <= 0)
-                    && (validator.getStartDate().compareTo(reservation.getEndDate()) <= 0)) {
-                validator.setHowManyRooms(validator.getHowManyRooms() - 1);
-                weNeedToCreateANewRommsValidator = false;
-            }
-        }
-
-        if(weNeedToCreateANewRommsValidator){
+        if (weNeedToCreateANewRoomsValidator) {
             RoomsValidator roomsValidator = new RoomsValidator();
             roomsValidator.setId(destination.getDestination_id());
-            roomsValidator.setHowManyRooms(destination.getAvailableRooms() - 1);
             roomsValidator.setStartDate(reservation.getStartDate());
             roomsValidator.setEndDate(reservation.getEndDate());
-            roomsValidators.add(roomsValidator);
+            if (destination.getAvailableRooms() - reservation.getHowManyRooms() < 0) {
+
+                throw new DateIsTakenException("ERROR", "We don't have that many free rooms " +
+                        "for this date range");
+
+            } else if (reservation.getHowManyRooms() < 0) {
+
+                throw new DateIsTakenException("ERROR", "You entered the rooms information " +
+                        "incorrectly");
+
+            } else {
+                roomsValidator.setHowManyRooms(destination.getAvailableRooms() - reservation.getHowManyRooms());
+                roomsValidators.add(roomsValidator);
+            }
         }
-
-
         //To not add multiple occupied dates with the same value
         for (DateRangeValidator dateRangeValidator : dateRangeValidators) {
             if ((dateRangeValidator.getStartDate().equals(reservation.getStartDate())) &&
                     (dateRangeValidator.getEndDate().equals(reservation.getEndDate()))) {
-                trueOrFalse = true;
+
+                weNeedToCreateNewOccupiedDatesRange = true;
                 break;
+
             }
         }
-        if(!trueOrFalse){
-                dateRangeValidators.add(checker);
-        occupiedDatesRepository.save(occupiedDate);
-        OccupiedDates occupiedDates = occupiedDatesRepository.findById(index).orElseThrow(() ->
-                new DateIsTakenException("FATAL_ERROR","If you see this error message the business logic is trash"));
-        destination.getOccupiedDates().add(occupiedDates);
-        index++;
+        if (!weNeedToCreateNewOccupiedDatesRange) {
+
+            dateRangeValidators.add(checker);
+
+            OccupiedDates occupiedDate = new OccupiedDates();
+            occupiedDate.setStartDate(reservation.getStartDate().toString());
+            occupiedDate.setEndDate(reservation.getEndDate().toString());
+            occupiedDate.setDestination(destination);
+
+            occupiedDatesRepository.save(occupiedDate);
+
+            OccupiedDates occupiedDates = occupiedDatesRepository.findById(index).orElseThrow(() ->
+                    new DateIsTakenException("FATAL_ERROR", "If you see this error message " +
+                            "the business logic is trash"));
+
+            destination.getOccupiedDates().add(occupiedDates);
+
+            index++;
         }
-
-
-        uniqueDestination.add(occupiedDate.getDestination().getDestination_id());
 
         destinationRepository.save(destination);
 
-        trueOrFalse=false;
+        weNeedToCreateNewOccupiedDatesRange = false;
 
-        weNeedToCreateANewRommsValidator=true;
+        weNeedToCreateANewRoomsValidator = true;
     }
 
 
