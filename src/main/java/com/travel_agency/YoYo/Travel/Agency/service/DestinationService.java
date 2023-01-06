@@ -1,18 +1,15 @@
 package com.travel_agency.YoYo.Travel.Agency.service;
 
-import com.travel_agency.YoYo.Travel.Agency.exception.DateIsTakenException;
-import com.travel_agency.YoYo.Travel.Agency.exception.DestinationMissingException;
+import com.travel_agency.YoYo.Travel.Agency.exception.DateException;
+import com.travel_agency.YoYo.Travel.Agency.exception.DestinationException;
 import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import com.travel_agency.YoYo.Travel.Agency.model.destination.OccupiedDates;
-import com.travel_agency.YoYo.Travel.Agency.model.location.City;
-import com.travel_agency.YoYo.Travel.Agency.model.location.Country;
 import com.travel_agency.YoYo.Travel.Agency.model.reservation.Reservation;
 import com.travel_agency.YoYo.Travel.Agency.repository.*;
 import com.travel_agency.YoYo.Travel.Agency.validation.DateRangeValidator;
 import com.travel_agency.YoYo.Travel.Agency.validation.RoomsValidator;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,27 +18,17 @@ import java.util.List;
 public class DestinationService {
 
     private static long index = 1;
-    private final List<DateRangeValidator> dateRangeValidators = new ArrayList<>();
-    private final List<Integer> uniqueDestination = new ArrayList<>();
+    private final List<DateRangeValidator> dateRangeValidators = new LinkedList<>();
     private boolean weNeedToCreateANewRoomsValidator = true;
     private final List<RoomsValidator> roomsValidators = new LinkedList<>();
     private boolean weNeedToCreateNewOccupiedDatesRange = false;
     private final DestinationRepository destinationRepository;
-    private final ReservationRepository reservationRepository;
-    private final CountryRepository countryRepository;
-    private final CityRepository cityRepository;
     private final OccupiedDatesRepository occupiedDatesRepository;
 
     public DestinationService(DestinationRepository destinationRepository,
-                              ReservationRepository reservationRepository,
-                              CountryRepository countryRepository,
-                              CityRepository cityRepository,
                               OccupiedDatesRepository occupiedDatesRepository) {
 
         this.destinationRepository = destinationRepository;
-        this.reservationRepository = reservationRepository;
-        this.countryRepository = countryRepository;
-        this.cityRepository = cityRepository;
         this.occupiedDatesRepository = occupiedDatesRepository;
 
     }
@@ -54,22 +41,16 @@ public class DestinationService {
     public Destination getDestinationById(long id) {
         return destinationRepository.findAll().stream().
                 filter(t -> t.getDestination_id() == id).findFirst().orElseThrow(() ->
-                        new DestinationMissingException("ERROR", "Destination missing"));
+                        new DestinationException("ERROR", "Destination missing"));
     }
 
-    //RESERVATION GET
-    public List<Reservation> getAllReservation() {
-        return reservationRepository.findAll();
+    //DESTINATION DELETE
+    public void deleteDestinationById(int id) {
+        Destination destination = getDestinationById(id);
+        destinationRepository.deleteById((long) id);
     }
 
-
-    //DESTINATION ADD
-    public void addADestination(Destination destination) {
-        destinationRepository.save(destination);
-    }
-
-
-    //RESERVATION ADD
+    //DESTINATION UPDATE WITH A RESERVATION
     public void addReservationToADestination(int id, Reservation reservation) {
 
         Destination destination = getDestinationById(id);
@@ -79,12 +60,12 @@ public class DestinationService {
                     (validator.getStartDate().compareTo(reservation.getEndDate()) <= 0)&&
                     (validator.getHowManyRooms() - reservation.getHowManyRooms() < 0)) {
 
-                throw new DateIsTakenException("ERROR", "No available rooms for this date range");
+                throw new DateException("ERROR", "No available rooms for this date range");
 
             } else
                 if (reservation.getHowManyRooms() < 0) {
 
-                throw new DateIsTakenException("ERROR", "You entered the rooms information incorrectly");
+                throw new DateException("ERROR", "You entered the rooms information incorrectly");
 
             } else
                 if ((validator.getId() == destination.getDestination_id()) &&
@@ -98,16 +79,12 @@ public class DestinationService {
         }
         if (reservation.getStartDate().compareTo(reservation.getEndDate()) > 0) {
 
-            throw new DateIsTakenException("ERROR", "The start date can't occurs after end date");
+            throw new DateException("ERROR", "The start date can't occurs after end date");
 
         }
 
         reservation.setDestination(destination);
         destination.getReservation().add(reservation);
-
-        DateRangeValidator checker = new DateRangeValidator();
-        checker.setStartDate(reservation.getStartDate());
-        checker.setEndDate(reservation.getEndDate());
 
         if (weNeedToCreateANewRoomsValidator) {
             RoomsValidator roomsValidator = new RoomsValidator();
@@ -116,12 +93,12 @@ public class DestinationService {
             roomsValidator.setEndDate(reservation.getEndDate());
             if (destination.getAvailableRooms() - reservation.getHowManyRooms() < 0) {
 
-                throw new DateIsTakenException("ERROR", "We don't have that many free rooms " +
+                throw new DateException("ERROR", "We don't have that many free rooms " +
                         "for this date range");
 
             } else if (reservation.getHowManyRooms() < 0) {
 
-                throw new DateIsTakenException("ERROR", "You entered the rooms information " +
+                throw new DateException("ERROR", "You entered the rooms information " +
                         "incorrectly");
 
             } else {
@@ -132,7 +109,9 @@ public class DestinationService {
         //To not add multiple occupied dates with the same value
         for (DateRangeValidator dateRangeValidator : dateRangeValidators) {
             if ((dateRangeValidator.getStartDate().equals(reservation.getStartDate())) &&
-                    (dateRangeValidator.getEndDate().equals(reservation.getEndDate()))) {
+                    (dateRangeValidator.getEndDate().equals(reservation.getEndDate()))&&
+                    (dateRangeValidator.getD_id()==destination.getDestination_id())
+            ) {
 
                 weNeedToCreateNewOccupiedDatesRange = true;
                 break;
@@ -140,6 +119,11 @@ public class DestinationService {
             }
         }
         if (!weNeedToCreateNewOccupiedDatesRange) {
+
+            DateRangeValidator checker = new DateRangeValidator();
+            checker.setStartDate(reservation.getStartDate());
+            checker.setEndDate(reservation.getEndDate());
+            checker.setD_id(destination.getDestination_id());
 
             dateRangeValidators.add(checker);
 
@@ -151,7 +135,7 @@ public class DestinationService {
             occupiedDatesRepository.save(occupiedDate);
 
             OccupiedDates occupiedDates = occupiedDatesRepository.findById(index).orElseThrow(() ->
-                    new DateIsTakenException("FATAL_ERROR", "If you see this error message " +
+                    new DateException("FATAL_ERROR", "If you see this error message " +
                             "the business logic is trash"));
 
             destination.getOccupiedDates().add(occupiedDates);
@@ -165,23 +149,4 @@ public class DestinationService {
 
         weNeedToCreateANewRoomsValidator = true;
     }
-
-
-    //DESTINATION DELETE
-    public Destination deleteDestinationById(int id) {
-        Destination destination = getDestinationById(id);
-        destinationRepository.deleteById((long) id);
-        return destination;
-    }
-
-    //ADD COUNTRY
-    public Country countryAdd(Country country) {
-        return countryRepository.save(country);
-    }
-
-    //ADD CITY
-    public City cityAdd(City city) {
-        return cityRepository.save(city);
-    }
-
 }

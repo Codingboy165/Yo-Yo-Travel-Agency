@@ -1,43 +1,36 @@
 package com.travel_agency.YoYo.Travel.Agency.controller;
 
+import com.travel_agency.YoYo.Travel.Agency.exception.Response;
 import com.travel_agency.YoYo.Travel.Agency.model.reservation.Reservation;
-import com.travel_agency.YoYo.Travel.Agency.repository.DestinationRepository;
-import com.travel_agency.YoYo.Travel.Agency.repository.ReservationRepository;
 import com.travel_agency.YoYo.Travel.Agency.service.DestinationService;
+import com.travel_agency.YoYo.Travel.Agency.service.ReservationService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("reservation")
+@RequestMapping("reservations")
+@CrossOrigin
 public class ReservationController {
 
+    private final ReservationService reservationService;
     private final DestinationService destinationService;
 
-    private final ReservationRepository reservationRepository;
 
-    private final DestinationRepository destinationRepository;
-
-    public ReservationController(DestinationService destinationService, ReservationRepository reservationRepository, DestinationRepository destinationRepository) {
+    public ReservationController(ReservationService reservationService, DestinationService destinationService) {
+        this.reservationService = reservationService;
         this.destinationService = destinationService;
-        this.reservationRepository = reservationRepository;
-        this.destinationRepository = destinationRepository;
     }
-
 
     @GetMapping
     public List<Reservation> getAllReservation() {
-        return destinationService.getAllReservation();
+        return reservationService.getAllReservation();
     }
-
-//    @GetMapping
-//    public Map<List<Reservation>,List<DestinationOverviewDTO>> getPreservation(){
-    //        Map<List<Reservation>, List<DestinationOverviewDTO>> result= new HashMap<>();
-//        result.put(destinationService.getAllReservation().stream().map(reservation -> ),destinationService.getAllDestination().stream().
-//                map(destination -> new DestinationOverviewDTO ((long) destination.getId(),destination.getName())).toList());
-//       return result;
-//    }
 
 }

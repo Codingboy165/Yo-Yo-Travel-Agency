@@ -1,5 +1,6 @@
 package com.travel_agency.YoYo.Travel.Agency.model.location;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,15 +16,24 @@ import java.util.List;
 public class City {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.AUTO,generator = "native")
-    @GenericGenerator(name="native",strategy = "native")
-    private int id;
+    private long id;
     @Column
     private String name;
     @OneToMany(mappedBy = "city")
     private List<MostVisitatedPlaces> mostVisitedPlaces;
-    @OneToMany(mappedBy = "city")
+    @OneToMany(mappedBy = "city",cascade = CascadeType.ALL)
     private List<Destination> destination;
-    @ManyToOne
+    @JoinColumn(name = "country_id")
+    @ManyToOne(targetEntity = Country.class,cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Country country;
+    @Column(name = "country_id",insertable = false, updatable = false)
+    private long country_id;
+
+    public City(long id, String name,Country country) {
+        this.id=id;
+        this.name = name;
+        this.country = country;
+    }
+
 }

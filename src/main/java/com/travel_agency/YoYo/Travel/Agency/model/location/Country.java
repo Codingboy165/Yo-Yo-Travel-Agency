@@ -10,6 +10,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
+import static jakarta.persistence.FetchType.LAZY;
+
 @AllArgsConstructor
 @Getter
 @Setter
@@ -18,11 +20,12 @@ import java.util.List;
 public class Country {
 
     @Id
-    @GeneratedValue(strategy =  GenerationType.AUTO,generator = "native")
-    @GenericGenerator(name="native",strategy = "native")
-    private int id;
+    @GeneratedValue
+    private long id;
     @Column(name = "country_name", unique = true, columnDefinition = "varchar(2000)")
     private String name;
+    @Column
+    private String capital;
     @Column
     private long population;
     @Column
@@ -31,8 +34,23 @@ public class Country {
     private String continent;
     @Column
     private int averageTouristInAYear;
-    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Column
+    private String imageSrc;
+    @Column
+    @Lob @Basic(fetch=LAZY)
+    private String description;
+    @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     private List<City> cities;
-    @OneToMany(mappedBy = "country")
-    private List<Destination> destination;
+    public Country(long id, String name, String capital, long population, int area, String continent, int averageTouristInAYear, String imageSrc, String description) {
+        this.id = id;
+        this.name = name;
+        this.capital = capital;
+        this.population = population;
+        this.area = area;
+        this.continent = continent;
+        this.averageTouristInAYear = averageTouristInAYear;
+        this.imageSrc = imageSrc;
+        this.description = description;
+    }
+
 }

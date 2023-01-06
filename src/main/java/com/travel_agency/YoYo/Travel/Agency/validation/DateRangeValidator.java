@@ -8,7 +8,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class DateRangeValidator {
-
+    private int d_id;
     private Date startDate;
     private Date endDate;
 

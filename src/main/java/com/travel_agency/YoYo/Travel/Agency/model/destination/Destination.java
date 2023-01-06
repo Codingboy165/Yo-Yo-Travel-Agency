@@ -1,5 +1,6 @@
 package com.travel_agency.YoYo.Travel.Agency.model.destination;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.travel_agency.YoYo.Travel.Agency.model.location.City;
 import com.travel_agency.YoYo.Travel.Agency.model.location.Country;
@@ -30,10 +31,12 @@ public class Destination {
     @NotBlank(message="Name must not be blank")
     @Size(min=2, message="Name must be at least 2 characters long")
     private String name;
-    @ManyToOne
-    private Country country;
-    @ManyToOne
+    @JoinColumn(name = "city_id")
+    @ManyToOne(targetEntity = City.class, fetch = FetchType.LAZY)
+    @JsonIgnore
     private City city;
+    @Column(name = "city_id",insertable=false, updatable=false)
+    private long city_id;
     @NotNull(message="Price must not be blank")
     private double price;
     @Column

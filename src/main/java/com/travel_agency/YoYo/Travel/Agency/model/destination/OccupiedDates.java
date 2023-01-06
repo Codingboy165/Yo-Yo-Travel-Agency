@@ -23,8 +23,13 @@ public class OccupiedDates {
     @Column
     @JsonProperty("end_date")
     private String endDate;
-    @ManyToOne
+    @JoinColumn(name = "destination_id")
+    @ManyToOne(targetEntity = Destination.class, fetch = FetchType.LAZY)
     @JsonIgnore
     private Destination destination;
+    @Column(name = "destination_id",insertable = false, updatable = false)
+    @JsonIgnore
+    private int destination_id;
+
 
 }

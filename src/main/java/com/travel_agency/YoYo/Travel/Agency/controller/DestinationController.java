@@ -16,36 +16,27 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@RequestMapping("destinations")
+@CrossOrigin
 public class DestinationController {
 
     private final DestinationService destinationService;
 
-    private final DestinationRepository destinationRepository;
-
-
-    public DestinationController(DestinationService destinationService, DestinationRepository destinationRepository) {
+    public DestinationController(DestinationService destinationService) {
         this.destinationService = destinationService;
-        this.destinationRepository = destinationRepository;
     }
-//    @GetMapping("/home")
-//    public Map<Destination,List<ReservationOverviewDTO>> getAll(){
-//        Map<Destination, List<ReservationOverviewDTO>> result= new HashMap<>();
-//        result.put(destinationService.getAllDestination(),destinationService.getAllDestination().stream().)
-//        return destinationService.getAllDestination();
-//    }
 
-    @GetMapping("/home")
-    @CrossOrigin
-    public List<Destination> getAll(){
+    @GetMapping
+    public List<Destination> getAll() {
         return destinationService.getAllDestination();
     }
-    @PostMapping("destination/{id}/reservation/add")
-    // @ResponseBody
-    public ResponseEntity<Response> saveReservation(@PathVariable int id,
-                                                    @Valid @RequestBody Reservation reservation,
-                                                    Errors errors){
+
+    @PostMapping("destination/reservation/add/{id}")
+    public ResponseEntity<Response> addReservationToADestination(@PathVariable int id,
+                                                                 @Valid @RequestBody Reservation reservation,
+                                                                 Errors errors) {
         Response response = new Response();
-        if(errors.hasErrors()){
+        if (errors.hasErrors()) {
             log.error("Contact form validation failed due to : " + errors.toString());
             response.setStatus("BAD");
             response.setStatusMsg("Reservation not saved successfully");
@@ -53,7 +44,9 @@ public class DestinationController {
                     .status(HttpStatus.BAD_REQUEST)
                     .body(response);
         }
-        destinationService.addReservationToADestination(id,reservation);
+
+        destinationService.addReservationToADestination(id, reservation);
+
         response.setStatus("OK");
         response.setStatusMsg("Reservation saved successfully");
         return ResponseEntity
@@ -61,30 +54,18 @@ public class DestinationController {
                 .body(response);
     }
 
-    @PostMapping("/destination")
-    public ResponseEntity<Response> saveDestination(
-            @Valid @RequestBody Destination destination,
-            Errors errors){
-        Response response = new Response();
-        if(errors.hasErrors()){
-            log.error("Contact form validation failed due to : " + errors.toString());
-            response.setStatus("BAD");
-            response.setStatusMsg("Destination not saved successfully");
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(response);
-        }
-        destinationService.addADestination(destination);
+    @DeleteMapping("destination/delete/{id}")
+    public ResponseEntity<Response> delete(@PathVariable int id) {
+
+        Response response=new Response();
         response.setStatus("OK");
         response.setStatusMsg("Destination saved successfully");
+
+        destinationService.deleteDestinationById(id);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
-
-    @DeleteMapping("{id}")
-    public Destination delete(@PathVariable int id){
-        return destinationService.deleteDestinationById(id);
-        }
 
 }
