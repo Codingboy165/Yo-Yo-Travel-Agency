@@ -1,10 +1,9 @@
 package com.travel_agency.YoYo.Travel.Agency.controller;
 
-import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import com.travel_agency.YoYo.Travel.Agency.exception.Response;
 import com.travel_agency.YoYo.Travel.Agency.model.reservation.Reservation;
-import com.travel_agency.YoYo.Travel.Agency.repository.DestinationRepository;
 import com.travel_agency.YoYo.Travel.Agency.service.DestinationService;
+import com.travel_agency.YoYo.Travel.Agency.service.ReservationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,16 +21,15 @@ public class DestinationController {
 
     private final DestinationService destinationService;
 
-    public DestinationController(DestinationService destinationService) {
+    private final ReservationService reservationService;
+
+    public DestinationController(DestinationService destinationService, ReservationService reservationService) {
         this.destinationService = destinationService;
+        this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public List<Destination> getAll() {
-        return destinationService.getAllDestination();
-    }
 
-    @PostMapping("destination/reservation/add/{id}")
+    @PostMapping("destination/{id}/reservation/add")
     public ResponseEntity<Response> addReservationToADestination(@PathVariable int id,
                                                                  @Valid @RequestBody Reservation reservation,
                                                                  Errors errors) {
@@ -54,12 +52,32 @@ public class DestinationController {
                 .body(response);
     }
 
+    @GetMapping("destination/{id}/reservations")
+    public List<Reservation> getAllReservation(@PathVariable long id) {
+        return reservationService.getAllReservationByDestinationId(id);
+    }
+
+    @DeleteMapping("destination/reservations/reservation/delete/{id}")
+    public ResponseEntity<Response> deleteReservationById(@PathVariable int id) {
+
+        Response response=new Response();
+        response.setStatus("OK");
+        response.setStatusMsg("Reservation deleted successfully");
+
+        reservationService.deleteAReservationById(id);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+
     @DeleteMapping("destination/delete/{id}")
     public ResponseEntity<Response> delete(@PathVariable int id) {
 
         Response response=new Response();
         response.setStatus("OK");
-        response.setStatusMsg("Destination saved successfully");
+        response.setStatusMsg("Destination deleted successfully");
 
         destinationService.deleteDestinationById(id);
 

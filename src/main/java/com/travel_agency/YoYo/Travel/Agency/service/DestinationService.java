@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -34,8 +35,9 @@ public class DestinationService {
     }
 
     //DESTINATION GET
-    public List<Destination> getAllDestination() {
-        return destinationRepository.findAll();
+    public List<Destination> getAllDestinationByCityId(long id) {
+        return destinationRepository.findAll().stream().
+                filter(t -> t.getCity_id() == id).collect(Collectors.toList());
     }
 
     public Destination getDestinationById(long id) {
@@ -44,11 +46,13 @@ public class DestinationService {
                         new DestinationException("ERROR", "Destination missing"));
     }
 
+
     //DESTINATION DELETE
     public void deleteDestinationById(int id) {
         Destination destination = getDestinationById(id);
         destinationRepository.deleteById((long) id);
     }
+
 
     //DESTINATION UPDATE WITH A RESERVATION
     public void addReservationToADestination(int id, Reservation reservation) {

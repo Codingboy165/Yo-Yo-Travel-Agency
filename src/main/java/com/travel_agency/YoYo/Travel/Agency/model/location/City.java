@@ -15,12 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 public class City {
 
+
     @Id
     private long id;
     @Column
     private String name;
-    @OneToMany(mappedBy = "city")
-    private List<MostVisitatedPlaces> mostVisitedPlaces;
     @OneToMany(mappedBy = "city",cascade = CascadeType.ALL)
     private List<Destination> destination;
     @JoinColumn(name = "country_id")

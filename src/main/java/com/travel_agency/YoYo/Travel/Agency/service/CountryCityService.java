@@ -20,9 +20,12 @@ public class CountryCityService {
 
     private LinkedList<String> uniqueNames = new LinkedList<>();
 
+    private final DestinationService destinationService;
+
     private final CityRepository cityRepository;
-    public CountryCityService(CountryReader countryReader,CountryRepository countryRepository, CityRepository cityRepository) {
+    public CountryCityService(CountryReader countryReader, CountryRepository countryRepository, DestinationService destinationService, CityRepository cityRepository) {
         this.countryRepository = countryRepository;
+        this.destinationService = destinationService;
         countryRepository.saveAll(countryReader.getCountries());
         System.out.println("Finished reading countries");
         this.cityRepository = cityRepository;
@@ -64,6 +67,8 @@ public class CountryCityService {
         city.getDestination().add(destination);
         cityRepository.save(city);
     }
+
+
 
     private City getCityById(int id) {
         return cityRepository.findAll().stream().

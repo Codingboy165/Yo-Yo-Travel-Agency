@@ -46,6 +46,7 @@ public class CountryReader {
                 country.getCities().add(city);
             }
             return country;
+
         } else{
             country = new Country(countryId++, countryParts[0], countryParts[1], Long.parseLong(countryParts[2]),
                     Integer.parseInt(countryParts[3]), countryParts[4], Integer.parseInt(countryParts[5]),countryParts[6],countryParts[7]);

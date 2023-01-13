@@ -5,6 +5,7 @@ import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import com.travel_agency.YoYo.Travel.Agency.model.location.City;
 import com.travel_agency.YoYo.Travel.Agency.model.location.Country;
 import com.travel_agency.YoYo.Travel.Agency.service.CountryCityService;
+import com.travel_agency.YoYo.Travel.Agency.service.DestinationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,8 +22,10 @@ public class CountryController {
 
     private final CountryCityService countryCityService;
 
-    public CountryController(CountryCityService countryCityService) {
+    private final DestinationService destinationService;
+    public CountryController(CountryCityService countryCityService, DestinationService destinationService) {
         this.countryCityService = countryCityService;
+        this.destinationService = destinationService;
     }
 
     @GetMapping
@@ -37,12 +40,16 @@ public class CountryController {
         return countryCityService.getAllCity();
     }
 
+    @GetMapping("/country/cities/city/{id}/destinations")
+    public List<Destination> getAllByCityId(@PathVariable long id) {
+        return destinationService.getAllDestinationByCityId(id);
+    }
     @GetMapping("{id}")
     public Country getCountryById(@PathVariable int id){
         return countryCityService.getCountryById(id);
     }
     @GetMapping("country={id}/cities")
-    public List<City> getAllCityByAContinent(@PathVariable int id){
+    public List<City> getAllCityByACountry(@PathVariable int id){
         return countryCityService.getAllCityByACountry(id);
     }
 
@@ -70,32 +77,32 @@ public class CountryController {
                 .body(response);
     }
 
-    @PostMapping("/country/city/add/{id}")
-    @CrossOrigin
-    public Country addCityToACountry(@PathVariable int id, @RequestBody City city){
-        return countryCityService.addCityToCountry(id,city);
-    }
+//    @PostMapping("/country/city/add/{id}")
+//    @CrossOrigin
+//    public Country addCityToACountry(@PathVariable int id, @RequestBody City city){
+//        return countryCityService.addCityToCountry(id,city);
+//    }
 
-    @PostMapping("/country/add")
-    public ResponseEntity<Response> addACountry( @Valid @RequestBody Country country,
-                                                 Errors errors){
-        Response response = new Response();
-        if (errors.hasErrors()) {
-            log.error("Contact form validation failed due to : " + errors.toString());
-            response.setStatus("BAD");
-            response.setStatusMsg("Country not saved successfully");
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(response);
-        }
-
-        countryCityService.countryAdd(country);
-
-        response.setStatus("OK");
-        response.setStatusMsg("Country saved successfully");
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
-    }
+//    @PostMapping("/country/add")
+//    public ResponseEntity<Response> addACountry( @Valid @RequestBody Country country,
+//                                                 Errors errors){
+//        Response response = new Response();
+//        if (errors.hasErrors()) {
+//            log.error("Contact form validation failed due to : " + errors.toString());
+//            response.setStatus("BAD");
+//            response.setStatusMsg("Country not saved successfully");
+//            return ResponseEntity
+//                    .status(HttpStatus.BAD_REQUEST)
+//                    .body(response);
+//        }
+//
+//        countryCityService.countryAdd(country);
+//
+//        response.setStatus("OK");
+//        response.setStatusMsg("Country saved successfully");
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(response);
+//    }
     }
 
