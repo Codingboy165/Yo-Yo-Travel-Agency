@@ -14,14 +14,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
-    private final List<DateRangeValidator> dateRangeValidators = new ArrayList<>();
-    private final List<Integer> uniqueDestination = new ArrayList<>();
-    private final List<RoomsValidator> roomsValidators = new LinkedList<>();
     private final ReservationRepository reservationRepository;
 
     public ReservationService(ReservationRepository reservationRepository) {
         this.reservationRepository = reservationRepository;
     }
+
     public List<Reservation> getAllReservationByDestinationId(long id) {
         return reservationRepository.findAll().stream().
                 filter(t -> t.getDestination_id() == id).collect(Collectors.toList());
@@ -32,9 +30,9 @@ public class ReservationService {
                 filter(t -> t.getReservation_id() == id).findFirst().orElseThrow(() ->
                         new DestinationException("ERROR", "Reservation missing"));
     }
-
-    public void deleteAReservationById(int id) {
-        Reservation reservation = getReservationById(id);
-        reservationRepository.deleteById((long) id);
-    }
 }
+//    public void deleteAReservationById(int id) {
+//        Reservation reservation = getReservationById(id);
+//        reservationRepository.deleteById((long) id);
+//    }
+

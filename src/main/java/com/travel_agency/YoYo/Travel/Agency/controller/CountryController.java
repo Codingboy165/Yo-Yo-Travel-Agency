@@ -41,7 +41,7 @@ public class CountryController {
     }
 
     @GetMapping("/country/cities/city/{id}/destinations")
-    public List<Destination> getAllByCityId(@PathVariable long id) {
+    public List<Destination> getAllDestinationByCityId(@PathVariable long id) {
         return destinationService.getAllDestinationByCityId(id);
     }
     @GetMapping("{id}")
@@ -76,33 +76,5 @@ public class CountryController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
-
-//    @PostMapping("/country/city/add/{id}")
-//    @CrossOrigin
-//    public Country addCityToACountry(@PathVariable int id, @RequestBody City city){
-//        return countryCityService.addCityToCountry(id,city);
-//    }
-
-//    @PostMapping("/country/add")
-//    public ResponseEntity<Response> addACountry( @Valid @RequestBody Country country,
-//                                                 Errors errors){
-//        Response response = new Response();
-//        if (errors.hasErrors()) {
-//            log.error("Contact form validation failed due to : " + errors.toString());
-//            response.setStatus("BAD");
-//            response.setStatusMsg("Country not saved successfully");
-//            return ResponseEntity
-//                    .status(HttpStatus.BAD_REQUEST)
-//                    .body(response);
-//        }
-//
-//        countryCityService.countryAdd(country);
-//
-//        response.setStatus("OK");
-//        response.setStatusMsg("Country saved successfully");
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(response);
-//    }
-    }
+}
 

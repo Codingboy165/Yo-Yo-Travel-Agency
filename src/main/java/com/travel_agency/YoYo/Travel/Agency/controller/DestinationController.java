@@ -27,8 +27,6 @@ public class DestinationController {
         this.destinationService = destinationService;
         this.reservationService = reservationService;
     }
-
-
     @PostMapping("destination/{id}/reservation/add")
     public ResponseEntity<Response> addReservationToADestination(@PathVariable int id,
                                                                  @Valid @RequestBody Reservation reservation,
@@ -51,29 +49,25 @@ public class DestinationController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
-
     @GetMapping("destination/{id}/reservations")
     public List<Reservation> getAllReservation(@PathVariable long id) {
         return reservationService.getAllReservationByDestinationId(id);
     }
-
-    @DeleteMapping("destination/reservations/reservation/delete/{id}")
-    public ResponseEntity<Response> deleteReservationById(@PathVariable int id) {
-
-        Response response=new Response();
-        response.setStatus("OK");
-        response.setStatusMsg("Reservation deleted successfully");
-
-        reservationService.deleteAReservationById(id);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
-    }
-
-
+//    @DeleteMapping("destination/reservations/reservation/delete/{id}")
+//    public ResponseEntity<Response> deleteReservationById(@PathVariable int id) {
+//
+//        Response response=new Response();
+//        response.setStatus("OK");
+//        response.setStatusMsg("Reservation deleted successfully");
+//
+//        reservationService.deleteAReservationById(id);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(response);
+//    }
     @DeleteMapping("destination/delete/{id}")
-    public ResponseEntity<Response> delete(@PathVariable int id) {
+    public ResponseEntity<Response> deleteDestinationById(@PathVariable int id) {
 
         Response response=new Response();
         response.setStatus("OK");

@@ -18,7 +18,6 @@ import static jakarta.persistence.FetchType.LAZY;
 @Entity
 @NoArgsConstructor
 public class Country {
-
     @Id
     @GeneratedValue
     private long id;
@@ -41,7 +40,9 @@ public class Country {
     private String description;
     @OneToMany(mappedBy = "country", cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
     private List<City> cities;
-    public Country(long id, String name, String capital, long population, int area, String continent, int averageTouristInAYear, String imageSrc, String description) {
+    public Country(long id, String name, String capital, long population,
+                   int area, String continent, int averageTouristInAYear,
+                   String imageSrc, String description) {
         this.id = id;
         this.name = name;
         this.capital = capital;

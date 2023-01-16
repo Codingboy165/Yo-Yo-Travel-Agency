@@ -35,11 +35,19 @@ public class CountryReader {
         String[] countryParts = line.split("\\|");
             List<City> cities= new ArrayList<>();
             Country country=null;
-        if(countryParts.length>8) {
+        if(countryParts.length>8) { //if the country has more than 8 parts that one has cities associated with
             List<String> nameOfTheCity=parseCity(countryParts[8]);
 
-            country = new Country(countryId++, countryParts[0], countryParts[1], Long.parseLong(countryParts[2]),
-                    Integer.parseInt(countryParts[3]), countryParts[4], Integer.parseInt(countryParts[5]),countryParts[6],countryParts[7],cities);
+            country = new Country(countryId++ //increase the id and put it in the Country
+                    ,countryParts[0] // name
+                    ,countryParts[1] // capital
+                    ,Long.parseLong(countryParts[2])  // population
+                    ,Integer.parseInt(countryParts[3]) // area
+                    ,countryParts[4] // continent
+                    ,Integer.parseInt(countryParts[5])  //average tourist in Year
+                    ,countryParts[6] //image src
+                    ,countryParts[7] //description
+                    ,cities); // all the popular cities in that country
 
             for(String name :nameOfTheCity){
                 City city = new City(cityId++,name,country);

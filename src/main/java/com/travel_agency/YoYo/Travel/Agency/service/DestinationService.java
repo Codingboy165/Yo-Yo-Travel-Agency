@@ -53,7 +53,6 @@ public class DestinationService {
         destinationRepository.deleteById((long) id);
     }
 
-
     //DESTINATION UPDATE WITH A RESERVATION
     public void addReservationToADestination(int id, Reservation reservation) {
 

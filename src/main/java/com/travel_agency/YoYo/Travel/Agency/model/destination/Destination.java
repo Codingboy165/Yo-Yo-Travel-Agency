@@ -3,7 +3,6 @@ package com.travel_agency.YoYo.Travel.Agency.model.destination;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.travel_agency.YoYo.Travel.Agency.model.location.City;
-import com.travel_agency.YoYo.Travel.Agency.model.location.Country;
 import com.travel_agency.YoYo.Travel.Agency.model.reservation.Reservation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -52,6 +51,9 @@ public class Destination {
     @OneToMany(mappedBy = "destination", cascade = CascadeType.ALL)
     @JsonProperty("occupied_dates")
     private List<OccupiedDates> occupiedDates;
+    @Column
+    @NotBlank(message="Address must not be blank")
+    private String address;
     @Column
     @JsonProperty("available_rooms")
     private int availableRooms;

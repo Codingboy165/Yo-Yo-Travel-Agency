@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 public class City {
 
-
     @Id
     private long id;
     @Column

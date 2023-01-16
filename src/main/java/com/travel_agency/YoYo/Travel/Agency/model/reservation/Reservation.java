@@ -30,7 +30,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class Reservation {
-
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private int reservation_id;
