@@ -1,6 +1,5 @@
 package com.travel_agency.YoYo.Travel.Agency.service;
 
-import com.travel_agency.YoYo.Travel.Agency.exception.CountryException;
 import com.travel_agency.YoYo.Travel.Agency.exception.DestinationException;
 import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import com.travel_agency.YoYo.Travel.Agency.model.location.City;
@@ -9,7 +8,6 @@ import com.travel_agency.YoYo.Travel.Agency.repository.CityRepository;
 import com.travel_agency.YoYo.Travel.Agency.repository.CountryRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 

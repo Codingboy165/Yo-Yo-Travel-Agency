@@ -53,19 +53,7 @@ public class DestinationController {
     public List<Reservation> getAllReservation(@PathVariable long id) {
         return reservationService.getAllReservationByDestinationId(id);
     }
-//    @DeleteMapping("destination/reservations/reservation/delete/{id}")
-//    public ResponseEntity<Response> deleteReservationById(@PathVariable int id) {
-//
-//        Response response=new Response();
-//        response.setStatus("OK");
-//        response.setStatusMsg("Reservation deleted successfully");
-//
-//        reservationService.deleteAReservationById(id);
-//
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(response);
-//    }
+
     @DeleteMapping("destination/delete/{id}")
     public ResponseEntity<Response> deleteDestinationById(@PathVariable int id) {
 
@@ -79,5 +67,4 @@ public class DestinationController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
-
 }

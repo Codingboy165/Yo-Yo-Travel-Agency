@@ -76,5 +76,25 @@ public class CountryController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @PutMapping("/country/city/destination/{id}/update")
+    public ResponseEntity<Response> update(@PathVariable int id, @Valid @RequestBody Destination destination, Errors errors) {
+        Response response = new Response();
+        if (errors.hasErrors()) {
+            log.error("Contact form validation failed due to : " + errors.toString());
+            response.setStatus("BAD");
+            response.setStatusMsg("Destination not updated successfully");
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(response);
+        }
+        destinationService.updateDestination(id, destination);
+
+        response.setStatus("OK");
+        response.setStatusMsg("Destination updated successfully");
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
+    }
 }
 

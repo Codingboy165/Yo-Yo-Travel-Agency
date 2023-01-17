@@ -53,6 +53,19 @@ public class DestinationService {
         destinationRepository.deleteById((long) id);
     }
 
+    //UPDATE A DESTINATION
+    public void updateDestination(int id, Destination destination){
+            Destination destinationToBeUpdated = getDestinationById(id);
+            destinationToBeUpdated.setName(destination.getName());
+            destinationToBeUpdated.setPrice(destination.getPrice());
+            destinationToBeUpdated.setTypeOfAccommodation(destination.getTypeOfAccommodation());
+            destinationToBeUpdated.setAvailableRooms(destination.getAvailableRooms());
+            destinationToBeUpdated.setDescription(destination.getDescription());
+            destinationToBeUpdated.setAddress(destination.getAddress());
+        destinationRepository.save(destinationToBeUpdated);
+    }
+
+
     //DESTINATION UPDATE WITH A RESERVATION
     public void addReservationToADestination(int id, Reservation reservation) {
 
