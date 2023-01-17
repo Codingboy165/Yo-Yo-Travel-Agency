@@ -44,6 +44,10 @@ public class CountryController {
     public List<Destination> getAllDestinationByCityId(@PathVariable long id) {
         return destinationService.getAllDestinationByCityId(id);
     }
+    @GetMapping("/country/cities/city/destinations/{id}")
+    public Destination getDestById(@PathVariable long id){
+        return destinationService.getDestinationById(id);
+    }
     @GetMapping("{id}")
     public Country getCountryById(@PathVariable int id){
         return countryCityService.getCountryById(id);
