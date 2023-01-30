@@ -15,16 +15,6 @@ import lombok.Setter;
 import java.sql.Date;
 import java.time.LocalDate;
 
-// Egy Json az add Reservationrol
-//      {
-//    "firstName": "ASD",
-//    "lastName": "ASD",
-//    "telephoneNumber": "1234567890",
-//    "email": "solyomjonathan@gmail.com",
-//        "startDate":"2002-12-21",
-//        "endDate":"2002-12-01"
-//
-//}
 @NoArgsConstructor
 @Entity
 @Getter

@@ -29,13 +29,11 @@ public class CountryController {
     }
 
     @GetMapping
-    @CrossOrigin
     public List<Country> getAllCountry(){
         return countryCityService.getAllCountry();
     }
 
     @GetMapping("/country/city")
-    @CrossOrigin
     public List<City> getAllCity(){
         return countryCityService.getAllCity();
     }
@@ -82,7 +80,7 @@ public class CountryController {
     }
 
     @PutMapping("/country/city/destination/{id}/update")
-    public ResponseEntity<Response> update(@PathVariable int id, @Valid @RequestBody Destination destination, Errors errors) {
+    public ResponseEntity<Response> updateDestination(@PathVariable int id, @Valid @RequestBody Destination destination, Errors errors) {
         Response response = new Response();
         if (errors.hasErrors()) {
             log.error("Contact form validation failed due to : " + errors.toString());

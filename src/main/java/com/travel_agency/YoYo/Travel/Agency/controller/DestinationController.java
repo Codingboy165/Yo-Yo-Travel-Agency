@@ -35,7 +35,7 @@ public class DestinationController {
         if (errors.hasErrors()) {
             log.error("Contact form validation failed due to : " + errors.toString());
             response.setStatus("BAD");
-            response.setStatusMsg("Reservation not saved successfully");
+            response.setStatusMsg("Reservation not saved successfully. Please check if you entered the info's correctly");
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(response);
@@ -50,7 +50,7 @@ public class DestinationController {
                 .body(response);
     }
     @GetMapping("destination/{id}/reservations")
-    public List<Reservation> getAllReservation(@PathVariable long id) {
+    public List<Reservation> getAllReservationByDestionationId(@PathVariable long id) {
         return reservationService.getAllReservationByDestinationId(id);
     }
 

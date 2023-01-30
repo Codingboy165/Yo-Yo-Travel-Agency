@@ -34,12 +34,13 @@ public class DestinationService {
 
     }
 
-    //DESTINATION GET
+    //DESTINATION GET BY CITY ID
     public List<Destination> getAllDestinationByCityId(long id) {
         return destinationRepository.findAll().stream().
                 filter(t -> t.getCity_id() == id).collect(Collectors.toList());
     }
 
+    //DESTINATION GET BY ID
     public Destination getDestinationById(long id) {
         return destinationRepository.findAll().stream().
                 filter(t -> t.getDestination_id() == id).findFirst().orElseThrow(() ->
@@ -49,7 +50,6 @@ public class DestinationService {
 
     //DESTINATION DELETE
     public void deleteDestinationById(int id) {
-        Destination destination = getDestinationById(id);
         destinationRepository.deleteById((long) id);
     }
 

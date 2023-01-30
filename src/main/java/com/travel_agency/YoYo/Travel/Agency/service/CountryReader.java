@@ -17,9 +17,7 @@ import java.util.stream.Collectors;
 public class CountryReader {
     @Value("${file.countries}")
     private String fileCountriesPath;
-
     private static long countryId = 1;
-
     private static long cityId=1;
     public List<Country> getCountries() {
         try {
@@ -34,7 +32,7 @@ public class CountryReader {
     private Country lineToCountry(String line) {
         String[] countryParts = line.split("\\|");
             List<City> cities= new ArrayList<>();
-            Country country=null;
+            Country country;
         if(countryParts.length>8) { //if the country has more than 8 parts that one has cities associated with
             List<String> nameOfTheCity=parseCity(countryParts[8]);
 

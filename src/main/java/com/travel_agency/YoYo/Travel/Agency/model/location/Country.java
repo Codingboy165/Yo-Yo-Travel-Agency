@@ -1,12 +1,10 @@
 package com.travel_agency.YoYo.Travel.Agency.model.location;
 
-import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 

@@ -24,22 +24,27 @@ public class CountryCityService {
         }
         this.cityRepository = cityRepository;
     }
+    //COUNTRIES GET
     public List<Country> getAllCountry(){
         return countryRepository.findAll();
     }
+    //CITIES GET
     public List<City> getAllCity(){
         return cityRepository.findAll();
     }
 
+    //CITIES GET BY A COUNTRY ID
     public List<City> getAllCityByACountry(int id){
         return cityRepository.findAll().stream().filter(city -> city.getCountry_id()==id).collect(Collectors.toList());
     }
+
+    //COUNTRY GET BY ID
     public Country getCountryById(int id){
         return countryRepository.findAll().stream().
                 filter(t->t.getId()==id).findFirst().orElseThrow(()->
                         new DestinationException("ERROR", "Country missing"));
     }
-    //DESTINATION ADD
+    //DESTINATION ADD TO CITY
     public void addADestinationToACity(int id, Destination destination) {
         City city=getCityById(id);
         destination.setCity(city);
@@ -47,6 +52,7 @@ public class CountryCityService {
         cityRepository.save(city);
     }
 
+    //CITY GET BY ID
     private City getCityById(int id) {
         return cityRepository.findAll().stream().
                 filter(t->t.getId()==id).findFirst().orElseThrow(()->

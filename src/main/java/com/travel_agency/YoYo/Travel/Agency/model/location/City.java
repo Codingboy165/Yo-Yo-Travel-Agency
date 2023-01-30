@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travel_agency.YoYo.Travel.Agency.model.destination.Destination;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
+
 
 import java.util.List;
 
